@@ -54,12 +54,17 @@ $conn->close();
         body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
         .desc-box { background: #eee; padding: 20px; border-radius: 5px; text-align: left; margin-top: 20px; white-space: pre-wrap; }
+	.avatar { width: 80px; height: 80px; background-color: #04AA6D; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 40px; font-weight: bold; margin: 0 auto 15px auto; }
     </style>
 </head>
 <body>
     <?php include 'menu.php'; ?>
 
     <div class="container">
+	<div class="avatar">
+            <?php echo htmlspecialchars(strtoupper(substr($profile_fullname, 0, 1))); ?>
+        </div>
+        
         <h1><?php echo htmlspecialchars($profile_fullname); ?></h1>
         <p style="color: gray;">@<?php echo htmlspecialchars($profile_owner); ?></p>
         
