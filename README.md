@@ -6,7 +6,7 @@ Cyber Security class
 * Linux (Ubuntu)
 * Nginx
 * MySQL
-* PHP (PHP-FPM)
+* PHP (PHP-FPM or specifically PHP8.3-FPM)
 
 ## Installation Instructions
 1. Clone this repository into your Nginx web root directory (e.g., `/var/www/html/`).
@@ -20,3 +20,5 @@ Cyber Security class
 ## Usage
 1. First, navigate to `/admin/newuser.php` to create user accounts.
 2. Next, navigate to `/socialnet/signin.php` to log in with the created accounts.
+
+* **Improved User Navigation:** Added cross-navigation buttons between the `/socialnet/signin.php` and `/admin/newuser.php` pages to improve the User Experience (UX), preventing users from getting stuck on either page.

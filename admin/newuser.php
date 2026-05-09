@@ -65,6 +65,10 @@ $conn->close();
 
             <button type="submit">Create Account</button>
         </form>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/socialnet/signin.php" style="color: #04AA6D; text-decoration: none; font-weight: bold; font-size: 14px;">← Back to Sign In</a>
+        </div>
     </div>
 </body>
 </html>

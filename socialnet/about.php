@@ -9,8 +9,9 @@
     <?php include 'menu.php'; ?>
     <div class="container">
         <h2>About This Project</h2>
-        <p><strong>Student Name:</strong> Your Real Name Here</p>
-        <p><strong>Student Number:</strong> 123456789</p>
+        <p><strong>Student Name:</strong> Vu Duc Nhat Minh</p>
+        <p><strong>Student Number:</strong> 1694504</p>
+	<p><strong>Class: CS 4451 Thursday afternoon</strong></p>
     </div>
 </body>
 </html>

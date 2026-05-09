@@ -75,6 +75,11 @@ $conn->close();
 
             <button type="submit">Log In</button>
         </form>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <p style="color: #7f8c8d; font-size: 14px;">Don't have an account?</p>
+            <a href="/admin/newuser.php" style="display: inline-block; padding: 10px 20px; background-color: #2c3e50; color: white; text-decoration: none; border-radius: 4px; font-size: 14px;">Create New Account</a>
+        </div>
     </div>
 </body>
 </html>
