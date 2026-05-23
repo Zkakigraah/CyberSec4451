@@ -36,12 +36,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Fetch the current description to pre-fill the text box
-$stmt_fetch = $conn->prepare("SELECT description FROM account WHERE username = ?");
-$stmt_fetch->bind_param("s", $current_user);
-$stmt_fetch->execute();
-$stmt_fetch->bind_result($current_description);
-$stmt_fetch->fetch();
-$stmt_fetch->close();
+// Vulnerable version replacing stmt fetch and their other functions
+$sql_fetch = "SELECT description FROM account WHERE username = '$current_user'";
+$result_fetch = $conn->query($sql_fetch);
+
+$current_description = '';
+if ($result_fetch && $result_fetch->num_rows > 0) {
+    $row_fetch = $result_fetch->fetch_assoc();
+    $current_description = $row_fetch['description'];
+}
 $conn->close();
 ?>
 
