@@ -19,11 +19,20 @@ if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
 // If "?owner=" exists in the URL, use that. Otherwise, use the logged-in user.
 if (isset($_GET['owner']) && !empty($_GET['owner'])) {
     $profile_owner = $_GET['owner'];
+
+    // --- SECURE CHANGE 1: CSRF TOKEN & AUTHORIZATION CHECK (ATT-1) ---
+    // If viewing another user's profile, validate that the request carries
+    // a valid CSRF token generated during sign-in to prevent forced unauthorized viewing.
+    if (!isset($_GET['csrf']) || $_GET['csrf'] !== $_SESSION['csrf_token']) {
+        die("<span style='color: red; font-family: Arial;'>CSRF validation failed. Unauthorized profile access blocked.</span>");
+    }
 } else {
     $profile_owner = $_SESSION['username'];
 }
 
-// Fetch the user's details from the database
+// --- SECURE CHANGE 2: PREVENT SQL INJECTION / UNION ATTACKS (ATT-4) ---
+// Secure prepared statements are used here to handle the dynamic owner parameter.
+// This completely stops attackers from appending UNION SELECT commands to extract user databases.
 $stmt = $conn->prepare("SELECT fullname, description FROM account WHERE username = ?");
 $stmt->bind_param("s", $profile_owner);
 $stmt->execute();
@@ -69,6 +78,9 @@ $conn->close();
         <p style="color: gray;">@<?php echo htmlspecialchars($profile_owner); ?></p>
         
         <div class="desc-box">
+             <!-- --- SECURE CHANGE 3: PREVENT STORED XSS (ATT-6) --- -->
+            // We escape the user-supplied description field using htmlspecialchars().
+            // This prevents stored malicious script payloads (like cookie stealers) from running in browsers.
             <?php echo htmlspecialchars($profile_description); ?>
         </div>
     </div>

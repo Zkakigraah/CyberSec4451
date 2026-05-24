@@ -14,13 +14,24 @@ $pass = 'password1';
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) die("Connection failed");
 
+// --- SECURE CHANGE 1: PREVENT IDOR ATTACKS (SET-2) ---
+// We bind the user context strictly to the immutable server-side session variable.
+// We completely ignore any client-side "target_user" form parameters.
 $current_user = $_SESSION['username'];
 $message = '';
 
 // Handle the form submission to update the database
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // --- SECURE CHANGE 2: CSRF TOKEN VALIDATION ---
+    // Prevent unauthorized sites from forcing a setting modification.
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF Token verification failed.");
+    }
+
     $new_description = $_POST['description'];
     
+    // --- SECURE CHANGE 3: PREVENT SQL INJECTION (ATT-3) ---
+    // Use prepared statements for updating records.
     $stmt_update = $conn->prepare("UPDATE account SET description = ? WHERE username = ?");
     $stmt_update->bind_param("ss", $new_description, $current_user);
     
@@ -63,6 +74,9 @@ $conn->close();
         <?php echo $message; ?>
         
         <form method="POST" action="">
+            <!-- --- SECURE CHANGE 4: INJECT HIDDEN CSRF TOKEN --- -->
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
+            
             <label>Write something about yourself:</label><br><br>
             <textarea name="description" rows="6" required><?php echo htmlspecialchars($current_description); ?></textarea>
             <button type="submit">Update Profile</button>

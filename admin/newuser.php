@@ -1,4 +1,14 @@
 <?php
+session_start();
+
+// --- SECURE CHANGE 1: PREVENT UNPRIVILEGED REGISTRATION (ATT-2) ---
+// Admin files must have strict authorization logic verifying that only logged-in users 
+// (or users with an administrative role) can trigger user additions.
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header("Location: /socialnet/signin.php");
+    exit;
+}
+
 // Database configuration
 $host = 'localhost';
 $db   = 'socialnet';
@@ -14,8 +24,15 @@ if ($conn->connect_error) {
 $message = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    // --- SECURE CHANGE 2: PREVENT CROSS-SITE REQUEST FORGERY (ATT-2 CSRF) ---
+    // Validate the cryptographically secure token passed from the active session.
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("<span style='color: red; font-family: Arial;'>CSRF token verification failed. Unauthorized action blocked.</span>");
+    }
+
     $username = $_POST['username'];
-    $fullname = $_POST['fullname']; // Updated to match assignment specs
+    $fullname = $_POST['fullname']; 
     $password = $_POST['password'];
 
     // Hash the password for security
@@ -54,6 +71,9 @@ $conn->close();
         <h2>Add New User</h2>
         <?php if ($message) echo "<p>$message</p>"; ?>
         <form method="POST" action="">
+            <!-- --- SECURE CHANGE 3: INJECT HIDDEN CSRF TOKEN --- -->
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
+
             <label>Username:</label>
             <input type="text" name="username" required>
 

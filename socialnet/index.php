@@ -45,6 +45,15 @@ if ($conn->connect_error) {
 
         <hr>
 
+        <!-- --- SECURE CHANGE 1: PREVENT REFLECTED XSS (HOME-1) --- -->
+        <?php
+        // Securely reflect the search query input by escaping characters via htmlspecialchars()
+        if (isset($_GET['search'])) {
+            $safe_search = htmlspecialchars($_GET['search'], ENT_QUOTES, 'UTF-8');
+            echo "<div style='background: #e2f0d9; border: 1px solid #385723; padding: 10px; border-radius: 5px; margin-bottom: 15px;'>Search results for: <strong>" . $safe_search . "</strong></div>";
+        }
+        ?>
+
         <h2>Other Users in the Network</h2>
         <ul class="user-list">
             <?php
@@ -62,7 +71,10 @@ if ($conn->connect_error) {
                     $other_fullname = htmlspecialchars($row['fullname']);
                     
                     // Create the link to the Profile Page with the ?owner= query string
-                    echo "<li>$other_fullname (@$other_username) - <a href='profile.php?owner=$other_username'>View Profile</a></li>";
+                    // --- SECURE CHANGE 2: PASS SECURE CSRF TOKENS THROUGH PROFILE LINKS (ATT-1) ---
+                    // Append the cryptographically safe session CSRF token parameter to the profile link URL
+                    $csrf_param = htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8');
+                    echo "<li>$other_fullname (@$other_username) - <a href='profile.php?owner=$other_username&csrf=$csrf_param'>View Profile</a></li>";
                 }
             } else {
                 echo "<li>You are the only user in the network!</li>";

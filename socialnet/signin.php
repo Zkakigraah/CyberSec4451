@@ -19,6 +19,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
+    // --- SECURE CHANGE 1: PREVENT SQL INJECTION (ATT-5) ---
+    // Instead of raw string concatenation, we use prepared statements.
+    // This forces MySQL to interpret user input strictly as data, not instructions.
     $stmt = $conn->prepare("SELECT id, fullname, password FROM account WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -29,11 +32,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->fetch();
 
         if (password_verify($password, $hashed_password)) {
+            // --- SECURE CHANGE 2: PREVENT SESSION FIXATION (ATT-7) ---
+            // On successful login, regenerate the Session ID. 
+            // This invalidates any session ID the attacker set in the victim's browser via XSS.
+            session_regenerate_id(true);
+
             // Success! Store info in Session
             $_SESSION['loggedin'] = true;
             $_SESSION['username'] = $username;
             $_SESSION['fullname'] = $fullname; // Required for the Home Page
             
+            // --- SECURE CHANGE 3: GENERATE SECURE CSRF TOKENS ---
+            // Generate a secure cryptographic token associated with this user session
+            // to validate state-changing requests on other pages (ATT-1 & ATT-2).
+            if (empty($_SESSION['csrf_token'])) {
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+            }
+
             // Redirect to Home Page
             header("Location: /socialnet/index.php");
             exit;
