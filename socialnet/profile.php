@@ -78,9 +78,10 @@ $conn->close();
         <p style="color: gray;">@<?php echo htmlspecialchars($profile_owner); ?></p>
         
         <div class="desc-box">
-             <!-- --- SECURE CHANGE 3: PREVENT STORED XSS (ATT-6) --- -->
+             <!-- --- SECURE CHANGE 3: PREVENT STORED XSS (ATT-6)
             // We escape the user-supplied description field using htmlspecialchars().
-            // This prevents stored malicious script payloads (like cookie stealers) from running in browsers.
+            // This prevents stored malicious script payloads (like cookie stealers) from running in browsers. 
+	    -->
             <?php echo htmlspecialchars($profile_description); ?>
         </div>
     </div>
